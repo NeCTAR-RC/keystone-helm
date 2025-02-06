@@ -1,0 +1,13 @@
+apiVersion: v2
+name: keystone
+description: A Helm chart for Openstack Keystone
+type: application
+version: 1.0.0
+appVersion: 25.0.0-14-g155f38a86-5-9
+dependencies:
+- name: common
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 2.29.1
+- name: nectarlib
+  version: 3.0.2
+  repository: oci://registry.rc.nectar.org.au/nectar-helm

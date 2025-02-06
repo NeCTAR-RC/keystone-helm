@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keystone-bin
+data:
+  fernet-manage.py: |
+{{ include "fernet-manage" . | indent 4 }}

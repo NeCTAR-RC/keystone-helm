@@ -1,0 +1,106 @@
+{{- $serviceAccountName := "keystone-fernet-rotate" }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $serviceAccountName }}
+  labels:
+    {{- include "nectarlib.labels" . | nindent 4 }}
+  {{- with .Values.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $serviceAccountName }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - create
+      - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $serviceAccountName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ $serviceAccountName }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $serviceAccountName }}
+    namespace: {{ .Release.Namespace | quote }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: keystone-fernet-rotate
+  labels:
+    {{- include "nectarlib.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.job.fernet_rotate.cron | quote }}
+  successfulJobsHistoryLimit: {{ .Values.job.fernet_rotate.history.success }}
+  failedJobsHistoryLimit: {{ .Values.job.fernet_rotate.history.failed }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "nectarlib.selectorLabels" . | nindent 12 }}
+        spec:
+          serviceAccountName: {{ $serviceAccountName }}
+          securityContext:
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          restartPolicy: OnFailure
+          containers:
+            - name: keystone-fernet-rotate
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              image: "{{ .Values.api.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              env:
+                - name: KEYSTONE_USER
+                  value: {{ .Values.job.fernet_rotate.user | quote }}
+                - name: KEYSTONE_GROUP
+                  value: {{ .Values.job.fernet_rotate.group | quote }}
+                - name: KUBERNETES_NAMESPACE
+                  value: {{ .Release.Namespace | quote }}
+                - name: KEYSTONE_KEYS_REPOSITORY
+                  value: /etc/keystone/fernet-keys/
+              command:
+                - python
+                - /tmp/keystone-bin/fernet-manage.py
+                - fernet_rotate
+              volumeMounts:
+                - name: {{ include "nectarlib.fullname" . }}
+                  mountPath: "/etc/{{ include "nectarlib.name" . }}/"
+                - name: pod-tmp
+                  mountPath: /tmp
+                - name: fernet-keys
+                  mountPath: /etc/keystone/fernet-keys
+                - name: credential-keys
+                  mountPath: /etc/keystone/credential-keys
+                - name: keystone-bin
+                  mountPath: /tmp/keystone-bin
+          volumes:
+            - name: {{ include "nectarlib.fullname" . }}
+              configMap:
+                name: {{ include "nectarlib.fullname" . }}
+            - name: pod-tmp
+              emptyDir: {}
+            - name: fernet-keys
+              emptyDir: {}
+            - name: credential-keys
+              emptyDir: {}
+            - name: keystone-bin
+              configMap:
+                name: keystone-bin

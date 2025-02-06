@@ -1,0 +1,149 @@
+# Default values for taynac.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+conf:
+  public_endpoint:
+  cors:
+    allow_origin:
+  rcshib:
+    allowed_hosts:
+  cache:
+    memcached_servers: []
+
+vault:
+  role: k8s
+  settings_secret: 'path/to/secret/in/vault'
+
+api:
+  port: 5000
+  command:
+    - kolla_httpd_start
+  apache:
+    enabled: true
+    wsgi_script: keystone-wsgi-public
+  image:
+    repository: registry.rc.nectar.org.au/kolla/ubuntu-source-keystone
+  replicaCount: 1
+  pdb:
+    enabled: false
+    minAvailable: 1
+  podAffinityPreset: ""
+  podAntiAffinityPreset: soft
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+  affinity: {}
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  volumes:
+    - name: tmp
+      emptyDir: {}
+    - name: fernet-keys
+      secret:
+        secretName: keystone-fernet-keys
+    - name: credential-keys
+      secret:
+        secretName: keystone-credential-keys
+  volume_mounts:
+    - name: tmp
+      mountPath: /tmp
+    - name: fernet-keys
+      readOnly: true
+      mountPath: /etc/keystone/fernet-keys
+    - name: credential-keys
+      readOnly: true
+      mountPath: /etc/keystone/credential-keys
+  ingress:
+    enabled: false
+  gateway:
+    enabled: false
+    annotations: {}
+    hostname: chart-example.local
+    parentRefs:
+      - name: default
+
+job:
+  db_sync:
+    enabled: true
+    command:
+      - keystone-manage
+      - db_sync
+    args:
+      - '--expand'
+  fernet_rotate:
+    # NOTE(rk760n): key rotation frequency, token expiration, active keys, and allow_expired_window should statisfy the formula
+    # max_active_keys = ((token_expiration + allow_expired_window) / rotation_frequency) + 2
+    # As expiration is 12h, max_active_keys is 7 and allow_expired_window is 48h by default,
+    # rotation_frequency need to be adjusted
+    # 12 hours
+    cron: "0 10 * * *"
+    user: keystone
+    group: keystone
+    history:
+      success: 3
+      failed: 1
+
+
+oslo_policy:
+
+image:
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 42425
+  runAsGroup: 42425
+  fsGroup: 42425
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - NET_BIND_SERVICE
+
+service:
+  type: ClusterIP
+
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []

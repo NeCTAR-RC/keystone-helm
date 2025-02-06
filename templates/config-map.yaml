@@ -1,0 +1,4 @@
+{{- include "nectarlib.configmap" (list . "keystone.configmap") -}}
+{{- define "keystone.configmap" -}}
+data: {}
+{{- end -}}
