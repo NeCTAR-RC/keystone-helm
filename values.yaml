@@ -79,6 +79,7 @@ job:
     args:
       - '--expand'
   fernet_rotate:
+    enabled: true
     # NOTE(rk760n): key rotation frequency, token expiration, active keys, and allow_expired_window should statisfy the formula
     # max_active_keys = ((token_expiration + allow_expired_window) / rotation_frequency) + 2
     # As expiration is 12h, max_active_keys is 7 and allow_expired_window is 48h by default,

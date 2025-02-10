@@ -1,4 +1,5 @@
 {{- $serviceAccountName := "keystone-fernet-rotate" }}
+{{- if .Values.job.fernet_rotate.enabled }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -104,3 +105,4 @@ spec:
             - name: keystone-bin
               configMap:
                 name: keystone-bin
+{{- end }}
