@@ -46,4 +46,7 @@ connection_recycle_time=60
 [oslo_messaging_notifications]
 driver=log
 
+[oslo_middleware]
+enable_proxy_headers_parsing=True
+
 {{- end }}
