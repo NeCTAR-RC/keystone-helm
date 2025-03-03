@@ -49,17 +49,17 @@ api:
     - name: fernet-keys
       secret:
         secretName: keystone-fernet-keys
+      defaultMode: 0440
     - name: credential-keys
       secret:
         secretName: keystone-credential-keys
+      defaultMode: 0440
   volume_mounts:
     - name: tmp
       mountPath: /tmp
     - name: fernet-keys
-      readOnly: true
       mountPath: /etc/keystone/fernet-keys
     - name: credential-keys
-      readOnly: true
       mountPath: /etc/keystone/credential-keys
   ingress:
     enabled: false
