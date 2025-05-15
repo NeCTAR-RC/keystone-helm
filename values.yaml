@@ -37,21 +37,13 @@ api:
     values: []
   affinity: {}
   resources: {}
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
   volumes:
     - name: tmp
       emptyDir: {}
     - name: fernet-keys
-      defaultMode: 288
       secret:
         secretName: keystone-fernet-keys
     - name: credential-keys
-      defaultMode: 288
       secret:
         secretName: keystone-credential-keys
   volume_mounts:
