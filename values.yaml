@@ -47,13 +47,13 @@ api:
     - name: tmp
       emptyDir: {}
     - name: fernet-keys
+      defaultMode: 288
       secret:
         secretName: keystone-fernet-keys
-      defaultMode: 0440
     - name: credential-keys
+      defaultMode: 288
       secret:
         secretName: keystone-credential-keys
-      defaultMode: 0440
   volume_mounts:
     - name: tmp
       mountPath: /tmp
