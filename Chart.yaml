@@ -2,8 +2,8 @@ apiVersion: v2
 name: keystone
 description: A Helm chart for Openstack Keystone
 type: application
-version: 1.0.6
-appVersion: 25.0.0-18-ge05f7feca-7-12
+version: 1.0.7
+appVersion: 25.0.0-21-gaf5af5d30-7-15
 dependencies:
 - name: common
   repository: oci://registry-1.docker.io/bitnamicharts
