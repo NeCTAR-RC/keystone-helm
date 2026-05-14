@@ -1,9 +1,11 @@
 1. Get the application URL by running these commands:
-{{- if .Values.api.ingress.enabled }}
-{{- range $host := .Values.api.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.api.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
+{{- if .Values.api.gateway.enabled }}
+{{- if .Values.api.gateway.hostnames }}
+{{- range .Values.api.gateway.hostnames }}
+  https://{{ . }}/
+{{- end }}
+{{- else if .Values.api.gateway.hostname }}
+  https://{{ .Values.api.gateway.hostname }}/
 {{- end }}
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "nectarlib.fullname" . }})

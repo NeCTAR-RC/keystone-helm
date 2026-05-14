@@ -53,8 +53,6 @@ api:
       mountPath: /etc/keystone/fernet-keys
     - name: credential-keys
       mountPath: /etc/keystone/credential-keys
-  ingress:
-    enabled: false
   gateway:
     enabled: false
     annotations: {}
