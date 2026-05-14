@@ -48,10 +48,7 @@ driver=log, messagingv2
 
 [oslo_messaging_rabbit]
 ssl=True
-rabbit_quorum_queue=true
-rabbit_transient_quorum_queue=true
-rabbit_stream_fanout=true
-rabbit_qos_prefetch_count=1
+amqp_durable_queues=True
 
 [oslo_middleware]
 enable_proxy_headers_parsing=True
