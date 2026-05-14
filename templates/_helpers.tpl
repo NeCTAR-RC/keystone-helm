@@ -16,5 +16,7 @@ vault.hashicorp.com/agent-inject-template-secrets.conf: |
   {{ print "admin_token={{ .Data.data.rcshib_admin_token }}" }}
   {{ print "[database]" }}
   {{ print "connection={{ .Data.data.database_connection }}" }}
+  {{ print "[DEFAULT]" }}
+  {{ print "transport_url={{ .Data.data.transport_url }}" }}
   {{ print "{{- end -}}" }}
 {{- end }}
