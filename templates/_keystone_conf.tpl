@@ -44,7 +44,8 @@ policy_file=/etc/keystone/policy.yaml
 connection_recycle_time=60
 
 [oslo_messaging_notifications]
-driver=log, messagingv2
+driver=log
+driver=messagingv2
 
 [oslo_messaging_rabbit]
 ssl=True
