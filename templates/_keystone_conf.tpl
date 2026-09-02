@@ -48,7 +48,6 @@ driver=log
 driver=messagingv2
 
 [oslo_messaging_rabbit]
-rabbit_transient_queues_ttl=600
 ssl=True
 amqp_durable_queues=True
 
