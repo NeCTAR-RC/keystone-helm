@@ -2,8 +2,8 @@ apiVersion: v2
 name: keystone
 description: A Helm chart for Openstack Keystone
 type: application
-version: 2.2.4
-appVersion: 27.0.0-55-g1a75f9c15-5-26
+version: 3.0.0
+appVersion: 29.0.1-26-ge9d06fff0-6-8
 dependencies:
 - name: nectarlib
   version: 4.4.0
