@@ -29,11 +29,9 @@ sentry:
 
 api:
   port: 5000
-  command:
-    - kolla_httpd_start
-  apache:
+  uwsgi:
     enabled: true
-    wsgi_script: keystone-wsgi-public
+    module: keystone.wsgi.api:application
   image:
     repository: registry.rc.nectar.org.au/kolla/ubuntu-source-keystone
   replicaCount: 1
